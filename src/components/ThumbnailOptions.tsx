@@ -72,11 +72,16 @@ export default function ThumbnailOptions({
     try {
       const thumbnailDataUrls = await processAllImages();
       const successfulThumbnails = thumbnailDataUrls
-        .map((dataUrl, index) => ({
-          // Use original file name, modify extension based on format
-          name: `${imageFiles[index].name.substring(0, imageFiles[index].name.lastIndexOf('.')) || imageFiles[index].name}-thumb.${settings.format}`,
-          dataUrl
-        }))
+        .map((dataUrl, index) => {
+          const originalFileName = imageFiles[index].name;
+          const lastDotIndex = originalFileName.lastIndexOf('.');
+          const nameWithoutExtension = lastDotIndex === -1 ? originalFileName : originalFileName.substring(0, lastDotIndex);
+          
+          return {
+            name: `${nameWithoutExtension}_thumbnail.${settings.format}`,
+            dataUrl
+          };
+        })
         .filter(item => item.dataUrl !== null) as { name: string; dataUrl: string }[];
 
       if (successfulThumbnails.length === 0) {
